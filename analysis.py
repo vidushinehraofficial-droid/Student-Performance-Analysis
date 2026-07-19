@@ -4,16 +4,11 @@ import pandas as pd
 import streamlit as st
 from sklearn.linear_model import LinearRegression
 
-# Page layout setup
+
 st.set_page_config(page_title="Student AI Advisor Pro", layout="wide")
 
-# Define our 6 predictive features
-feature_cols = ["Math", "Science", "English", "History", "Art", "absences"]
 
-# ==========================================
-# 🔐 STUDENT LOGIN AUTHENTICATION SYSTEM
-# ==========================================
-# Mock student database mapped to system IDs
+feature_cols = ["Math", "Science", "English", "History", "Art", "absences"]
 STUDENT_DB = {
     "ST101": {"name": "VIDUSHI", "Math": 34.0, "Science": 42.0, "English": 38.0, "History": 29.0, "Art": 45.0, "absences": 3},
     "ST102": {"name": "Priya Sharma", "Math": 48.0, "Science": 46.0, "English": 44.0, "History": 49.0, "Art": 38.0, "absences": 1},
@@ -26,7 +21,7 @@ if "logged_in_student" not in st.session_state:
 if "evaluation_history" not in st.session_state:
     st.session_state.evaluation_history = []
 
-# Login UI Frame
+
 if st.session_state.logged_in_student is None:
     st.title("🔐 Student Performance Portal Access")
     st.write("Please authenticate using your assigned Student Identification Number to access predictions.")
@@ -43,19 +38,17 @@ if st.session_state.logged_in_student is None:
             else:
                 st.error("Invalid Student ID. Use STU001, STU002, STU003, or STU004 for evaluation testing.")
     
-    # Show available test IDs in an expander for ease of grading/testing
+    
     with st.expander("💡 Portfolio Review: Available Test Student Profiles"):
         st.write("You can use any of the following valid IDs to preview different academic standing behaviors:")
         st.json(STUDENT_DB)
-    st.stop() # Prevents the rest of the application dashboard from loading until validated
+    st.stop() 
 
-# Retrieve details for authenticated session profile object
+
 current_student_id = st.session_state.logged_in_student
 student_profile = STUDENT_DB[current_student_id]
 
-# ==========================================
-# ⚙️ SYSTEM SETTINGS CONFIGURATION
-# ==========================================
+
 st.sidebar.header(f"👤 Account: {student_profile['name']}")
 st.sidebar.write(f"ID: {current_student_id}")
 if st.sidebar.button("🔓 Log Out"):
@@ -71,9 +64,7 @@ max_score_limit = st.sidebar.selectbox(
     format_func=lambda x: f"Out of {int(x)}"
 )
 
-# ==========================================
-# DATA LOADING / AUTO-GENERATION
-# ==========================================
+
 use_mock_data = True
 
 if os.path.exists("StudentData.csv"):
@@ -98,26 +89,20 @@ if use_mock_data:
         (df["History"] * 0.15) + (df["Art"] * 0.1) - (df["absences"] * absence_weight)
     )
     df["G3"] = df["G3"].clip(0.0, max_score_limit)
-
-# Calculate base percentages
 subject_sum = df["Math"] + df["Science"] + df["English"] + df["History"] + df["Art"]
 df["Percentage (%)"] = (((subject_sum / 5) / max_score_limit) * 100).round(1)
 
-# Train AI
+
 X = df[feature_cols]
 y = df["G3"]
 ai_model = LinearRegression()
 ai_model.fit(X, y)
-
-# ==========================================
-# SIDEBAR PANEL: LIVE SLIDERS (PRE-POPULATED BY USER DATA)
-# ==========================================
 st.sidebar.divider()
 st.sidebar.header("📝 Simulator Settings")
 st.sidebar.write("Values initialized directly from your record files. Adjust to run 'What-If' scenarios.")
 
-# Automatically scale initial data if system settings limits change dynamically
-scale_factor = max_score_limit / 50.0  # Base records are written out of 50
+
+scale_factor = max_score_limit / 50.0  
 init_math = min(max_score_limit, student_profile["Math"] * scale_factor)
 init_science = min(max_score_limit, student_profile["Science"] * scale_factor)
 init_english = min(max_score_limit, student_profile["English"] * scale_factor)
@@ -137,15 +122,13 @@ st.sidebar.divider()
 st.sidebar.header("🎯 Target Goal Setter")
 target_grade = st.sidebar.slider(f"Set Target Final Grade:", min_value=0.0, max_value=max_score_limit, value=max_score_limit * 0.7, step=1.0)
 
-# ==========================================
-# MAIN DASHBOARD PAGE
-# ==========================================
+
 st.title("🎓 Multi-Subject Student Performance AI")
 st.subheader(f"👋 Active Session Profile: {student_profile['name']} ({current_student_id})")
 st.write("Review your authenticated record analytics and simulate metric goals dynamically below.")
 st.divider()
 
-# Projections logic calculations
+
 user_inputs = [[input_math, input_science, input_english, input_history, input_art, input_absences]]
 predicted_grade = max(0.0, min(max_score_limit, ai_model.predict(user_inputs)[0]))
 predicted_percentage = (predicted_grade / max_score_limit) * 100
@@ -153,7 +136,7 @@ predicted_percentage = (predicted_grade / max_score_limit) * 100
 current_avg = (input_math + input_science + input_english + input_history + input_art) / 5
 user_percentage = (current_avg / max_score_limit) * 100
 
-# Metric blocks output
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
@@ -175,7 +158,7 @@ with col3:
 
 st.divider()
 
-# Snapshot trigger interface module
+
 st.write("### 📸 Performance Snapshot Logger")
 st.write("Save your alternative slider scenarios to track custom academic optimization paths over time.")
 
@@ -201,10 +184,10 @@ if st.button("💾 Save Current Evaluation as History Entry"):
         st.session_state.evaluation_history.append(snapshot)
         st.success("Snapshot successfully appended to the active student session ledger!")
 
-# Display log if populated
+
 if st.session_state.evaluation_history:
     st.write("#### 🕒 Saved Progress & Past Performance History")
-    # Filter the layout log view so students only track entries tied to their unique validated ID profile
+    
     full_history_df = pd.DataFrame(st.session_state.evaluation_history)
     filtered_history_df = full_history_df[full_history_df["StudentID"] == current_student_id]
     
