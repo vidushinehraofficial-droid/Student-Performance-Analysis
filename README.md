@@ -1,34 +1,23 @@
-# Student Performance Analysis
+# Student Grade Predictor
 
-## Project Overview
+This is a simple Streamlit app that predicts a student's final year-end grade using machine learning (Linear Regression). It calculates predictions based on their current mid-term marks and total absences. 
 
-This project analyzes student performance data using Python and Pandas.
+It's designed for teachers and school counselors to sit down with students, play with the sliders, and see exactly how raising a grade or cutting down on absences changes their projected final score.
 
-## Tools Used
+## Features
+* **Choose Your Grading Scale:** Switch between 20, 50, or 100-point systems depending on your school. The app handles all the math automatically.
+* **Goal Tracker:** Set a target grade to see a live progress bar showing how close the student is to hitting it.
+* **Save Snapshots:** A table at the bottom lets you save different slider setups so you can compare multiple scenarios side-by-side.
+* **Auto-Data Backup:** If the `StudentData.csv` file isn't in the folder, the app generates fake data on the spot so the AI can still train and work without crashing.
 
-* Python
-* Pandas
-* Matplotlib
+## Files in this Project
+* `analysis.py` - The main Python file with the machine learning model and the Streamlit dashboard layout.
+* `StudentData.csv` - The historical dataset used to train the prediction model.
+* `README.md` - This guide.
 
-## Analysis Performed
+## How to Run It Locally
 
-* Final Grade Distribution
-* Study Time vs Final Grade
-* Absences vs Final Grade
-* Student Performance Statistics
-
-## Key Insights
-
-* Students who study more generally achieve better grades.
-* Higher absences can negatively affect performance.
-* Student grades show significant variation across the dataset.
-
-## Files
-
-* StudentData.csv → Dataset
-* analysis.py → Analysis code
-* images/ → Graph screenshots
-
-## Author
-
-VIDUSHI NEHRA
+1. **Clone this repository:**
+   ```bash
+   git clone <your-repository-url>
+   cd <your-repository-folder>
